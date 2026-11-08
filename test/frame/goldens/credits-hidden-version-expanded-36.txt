@@ -1,0 +1,64 @@
+ ▼ TEST                             
+                                    
+Quota                               
+production-team@example.com  blocked
+auth needs attention                
+5h      ██████████ 0% left        4h
+credits ████████░░ 20% left       1d
+prepaid                1,235 credits
+                                    
+Routing                             
+Route                     main-first
+Killswitch production-team@example.…
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    

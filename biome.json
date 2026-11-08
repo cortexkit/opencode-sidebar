@@ -1,0 +1,25 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "jsxQuoteStyle": "single",
+      "trailingCommas": "all",
+      "quoteStyle": "single"
+    }
+  },
+  "linter": { "enabled": true },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "src/**",
+      "test/**",
+      "scripts/**",
+      "*.json",
+      "!!dist",
+      "!!target",
+      "!!.cortexkit"
+    ]
+  }
+}

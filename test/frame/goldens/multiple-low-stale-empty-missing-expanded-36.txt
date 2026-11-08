@@ -1,0 +1,64 @@
+ ▼ TEST                       v1.8.4
+                                    
+Quota                               
+active-low                    active
+auth needs attention                
+5h ██████████ <1% left            2h
+7d ░░░░░░░░░░ 100% left        6d23h
+prepaid                1,235 credits
+                                    
+stale-idle-long-account-name blocked
+auth needs attention                
+5h reset since last check           
+checked 1h ago                      
+prepaid                1,235 credits
+                                    
+empty                           idle
+auth needs attention                
+—                                   
+prepaid                1,235 credits
+                                    
+missing                         idle
+auth needs attention                
+checking…                           
+prepaid                1,235 credits
+                                    
+Routing                             
+Route                     main-first
+Killswitch production-team@example.…
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    

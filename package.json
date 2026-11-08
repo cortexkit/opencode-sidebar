@@ -1,0 +1,50 @@
+{
+  "name": "@cortexkit/opencode-sidebar",
+  "version": "0.0.0",
+  "description": "Shared OpenCode sidebar frame for CortexKit plugins.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cortexkit/opencode-sidebar.git"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./src/index.tsx"
+    }
+  },
+  "files": [
+    "src/",
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "types": "bun run typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "format:check": "biome format .",
+    "prepublishOnly": "bun run build",
+    "check:floor": "bun scripts/check-quota-sidebar-floor.mjs",
+    "check:opentui-0511": "bun scripts/check-opentui-0511.mjs"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.4.5",
+    "@opentui/solid": ">=0.4.5",
+    "solid-js": ">=1.9.12 <2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@opentui/core": ">=0.5.12",
+    "@opentui/solid": ">=0.5.12",
+    "@tsconfig/bun": "1.0.11",
+    "@types/bun": "1.4.2",
+    "bun-types": "1.4.2",
+    "solid-js": "1.9.18",
+    "typescript": "7.0.2"
+  }
+}
