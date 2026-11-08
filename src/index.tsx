@@ -78,7 +78,10 @@ export interface AccountView {
   status: { text: string; tone: Tone }
   blocked: boolean
   indicatorTone: Tone
-  /** Whether any window has something to show; drives the empty text. */
+  /**
+   * Whether any window has a known reading. Without one, the collapsed row
+   * shows `emptyQuotaText.collapsed` instead of `collapsedQuotaText`.
+   */
   hasQuota: boolean
   /** The collapsed row's quota text, already narrowed. */
   collapsedQuotaText?: string

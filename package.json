@@ -29,7 +29,7 @@
     "format": "biome check --write .",
     "format:check": "biome format .",
     "prepublishOnly": "bun run build",
-    "check:floor": "bun scripts/check-quota-sidebar-floor.mjs",
+    "check:floor": "bun scripts/check-floor.mjs",
     "check:opentui-0511": "bun scripts/check-opentui-0511.mjs"
   },
   "peerDependencies": {
