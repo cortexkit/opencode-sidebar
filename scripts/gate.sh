@@ -37,7 +37,16 @@ ignored_files() {
   tracked=$(git ls-files -ci --exclude-standard -- .cortexkit)
   test -z "$tracked" || { printf '%s\n' "$tracked"; return 1; }
 }
+# CI installs with Bun 1.3.14 too, which can't read the lockfile version 2 that
+# Bun 1.4 writes. Regenerate bun.lock with Bun 1.3.14 when this fails.
+lockfile_v1() {
+  grep -q '"lockfileVersion": 1,' bun.lock || {
+    printf 'bun.lock is not lockfile version 1; run Bun 1.3.14 install\n' >&2
+    return 1
+  }
+}
 export NO_COLOR=1
+run_step lockfile-version lockfile_v1
 run_step frozen-lockfile bun install --frozen-lockfile
 run_step build bun run build
 run_step types bun run types

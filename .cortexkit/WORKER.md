@@ -14,7 +14,7 @@ Anything not listed here comes to the repository maintainer as a question.
 - Reports under `.cortexkit/internal-docs/` need no gate or commit. Deliver with the existing HEAD.
 
 ## Pre-approved (do it, then report it)
-- Regenerate `bun.lock` after an approved manifest change.
+- Regenerate `bun.lock` after an approved manifest change, with Bun 1.3.14 (`mise exec bun@1.3.14 -- bun install`). Bun 1.4 writes lockfile version 2, which CI's Bun 1.3.14 job can't read; the fast gate's `lockfile-version` step refuses it.
 - Add test-only helpers outside published source.
 - Format with Biome and fix lint in touched files.
 - Update comments for behaviour you changed.
