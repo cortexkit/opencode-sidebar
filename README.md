@@ -15,6 +15,11 @@ Bind `@opentui/core`, `@opentui/solid` and `solid-js` to the host's single runti
 Do not load the TSX directly from `node_modules`, bundle another Solid copy or
 substitute `solid-js/web`. A second runtime can paint once and then stop updating.
 
+The TSX names no JSX import source of its own. Tests that import it outside your
+build (for example `bun test` rendering the frame) need the same setup as the
+build: run it through the OpenTUI Solid transform, with `jsxImportSource` set to
+`@opentui/solid`. Otherwise Bun compiles it as React JSX and the render fails.
+
 Peers: OpenTUI core and Solid integration `>=0.4.5`, and Solid `>=1.9.12 <2`.
 
 ## Usage
