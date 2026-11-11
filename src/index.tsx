@@ -346,8 +346,9 @@ export function SidebarGaugeRow(props: SidebarGaugeRowProps) {
         </text>
       </box>
       <Show when={value()}>
-        <text fg={context.theme.textMuted} wrapMode='none'>
-          {value()}
+        {/* The right-hand value reads like a stat row's: normal text, bold. */}
+        <text fg={context.theme.text} wrapMode='none'>
+          <b>{value()}</b>
         </text>
       </Show>
     </box>
