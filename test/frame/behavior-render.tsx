@@ -34,6 +34,7 @@ const account: AccountView = {
 const [collapsed, setCollapsed] = createSignal(false)
 const [accounts, setAccounts] = createSignal<readonly AccountView[]>([account])
 const [showQuota, setShowQuota] = createSignal(true)
+const [collapsible, setCollapsible] = createSignal<boolean>()
 let storedCollapsed = false
 let clicks = 0
 const view = await testRender(
@@ -46,6 +47,7 @@ const view = await testRender(
       now={NOW}
       showQuota={showQuota()}
       collapsed={collapsed()}
+      collapsible={collapsible()}
       onToggle={() => {
         clicks++
         storedCollapsed = !storedCollapsed
@@ -55,6 +57,7 @@ const view = await testRender(
         <SidebarTextRow text='before windows' tone='warning' />
       )}
       afterQuota={() => <SidebarTextRow text='after windows' />}
+      collapsedSections={() => <SidebarTextRow text='compact custom' />}
       sections={() => (
         <SidebarSection title='Custom'>
           <SidebarStatRow label='Choice' value='plugin value' />
@@ -120,6 +123,25 @@ try {
   assert.ok(empty.includes('Custom'))
   await view.mockMouse.click(3, 0)
   assert.equal(clicks, 2)
+  storedCollapsed = true
+  setCollapsible(true)
+  const accountless = await draw()
+  assert.ok(accountless.includes('▶ TEST'))
+  assert.ok(accountless.includes('compact custom'))
+  assert.ok(!accountless.includes('Choice'))
+  await view.mockMouse.click(3, 0)
+  assert.ok((await draw()).includes('▼ TEST'))
+  assert.ok((await draw()).includes('Choice'))
+  assert.equal(clicks, 3)
+  setAccounts([account])
+  setShowQuota(true)
+  setCollapsible(false)
+  setCollapsed(true)
+  const fixed = await draw()
+  assert.ok(!fixed.includes('▶') && !fixed.includes('▼'))
+  assert.ok(fixed.includes('First group'))
+  await view.mockMouse.click(3, 0)
+  assert.equal(clicks, 3)
 } finally {
   view.renderer.destroy()
 }

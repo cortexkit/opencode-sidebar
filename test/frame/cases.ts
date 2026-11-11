@@ -63,8 +63,18 @@ export interface FrameInput {
   name: string
   accounts: readonly AccountView[]
   version?: string
+  collapsible?: boolean
+  gauges?: boolean
+  widths?: readonly number[]
 }
 export const cases: FrameInput[] = [
+  {
+    name: 'accountless-gauges-long-status',
+    accounts: [],
+    collapsible: true,
+    gauges: true,
+    widths: [16, 36, 37, 38, 42],
+  },
   { name: 'blocked-pace-long-stat', accounts: [main], version: 'v1.8.4' },
   {
     name: 'multiple-low-stale-empty-missing',

@@ -1,0 +1,64 @@
+ ▼ TEST         
+ctx 45% left 48…
+zero 100% left  
+full 0% left    
+unkn… no reading
+Status Context …
+No accounts     
+                
+Routing         
+Route main-first
+Killswitch prod…
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                

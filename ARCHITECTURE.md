@@ -31,8 +31,8 @@ directly.
 
 | Path | What it holds |
 | --- | --- |
-| `src/index.tsx` | The whole package: types, `SidebarFrame`, `SidebarSection`, `SidebarStatRow`, `SidebarTextRow`, and the internal quota, collapsed and account rows. |
-| `test/frame/` | Rendered-frame tests on fixed view data, with byte-exact goldens (characters and style spans) at 16, 36, 37 and 42 columns. |
+| `src/index.tsx` | The whole package: types, `SidebarFrame`, `SidebarSection`, `SidebarStatRow`, `SidebarGaugeRow`, `SidebarTextRow`, and the internal quota, collapsed and account rows. |
+| `test/frame/` | Rendered-frame tests on fixed view data, with byte-exact goldens (characters and style spans) at 16, 36, 37 and 42 columns, plus `SidebarGaugeRow` frames at 38 columns. |
 | `test/import-rule.test.ts` | Fails on any import outside the host runtime. |
 | `scripts/check-runtime.mjs` | Runs the typecheck and frame tests in a scratch install of a given OpenTUI and Solid version. `check-floor.mjs` (0.4.5) and `check-opentui-0511.mjs` (0.5.11) call it. |
 | `scripts/gate.sh` | `--fast`: install check, build, types, lint, format. Full: also tests and both runtime checks. |
@@ -49,7 +49,7 @@ So the source imports only `@opentui/core`, `@opentui/solid` and `solid-js`, and
 `test/import-rule.test.ts` enforces it.
 
 **Context.** `SidebarFrame` provides its props (with the theme filled in) through a Solid
-context. `SidebarSection`, `SidebarStatRow` and `SidebarTextRow` throw outside a frame, so
+context. `SidebarSection`, `SidebarStatRow`, `SidebarGaugeRow` and `SidebarTextRow` throw outside a frame, so
 a plugin can't render them with no theme or appearance.
 
 **Theme fallback.** A missing `textMuted`, `accent`, `success`, `warning` or `error` takes
@@ -58,8 +58,8 @@ on `accent`) only when both are set, because inverting a partial palette can put
 on a light background. `background` is used for nothing else.
 
 **Collapse is controlled.** The frame takes `collapsed` and `onToggle`. A click on the
-header toggles only when there are accounts. Without accounts the frame always shows its
-expanded sections.
+header toggles only when there are accounts, unless `collapsible` is set. Set it to
+`true` to enable the toggle without accounts, or `false` to keep the frame expanded.
 
 **Fitting text to the width.** Rows measure their own width (`onSizeChange`) and cut text
 with `…` by display width (`Bun.stringWidth` when present). A stat row keeps its label whole
@@ -72,6 +72,9 @@ does not wrap; `SidebarTextRow` wraps only when the plugin passes a `wrapMode`.
 thresholds. A pace overlay replaces the cells between usage and elapsed time. The segment
 list keeps the same number of slots with or without an overlay, so a live pace change
 updates existing text nodes instead of creating new ones.
+`SidebarGaugeRow` uses the same bar segments for non-quota percentages. It has
+optional threshold overrides and shows `no reading` when its value is unknown.
+It cuts optional text and the bar to fit, then `label` if necessary.
 
 ## Invariants
 

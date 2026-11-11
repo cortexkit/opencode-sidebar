@@ -1,0 +1,64 @@
+ ▼ TEST                               
+ctx ██████░░░░ 45% left      483K/872K
+zero ░░░░░░░░░░ 100% left             
+full ██████████ 0% left               
+unknown no reading                    
+Status Context summary pending until …
+No accounts                           
+                                      
+Routing                               
+Route                       main-first
+Killswitch production-team@example.co…
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      
+                                      

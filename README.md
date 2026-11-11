@@ -49,6 +49,7 @@ export function Panel() {
       now={Date.now()}
       showQuota={false}
       collapsed={collapsed()}
+      collapsible
       onToggle={() => setCollapsed((value) => !value)}
       sections={() => (
         <SidebarSection title='Activity'>
@@ -60,8 +61,11 @@ export function Panel() {
 }
 ```
 
-The caller controls collapse. The header toggles only when accounts exist;
-without accounts the frame always shows its expanded sections.
+The caller controls the panel state. By default, the header toggles only when the
+panel has accounts. Set `collapsible={true}` to enable the toggle without accounts.
+Set it to `false` to keep a panel expanded with or without accounts.
+When `collapsed={true}`, the panel shows `collapsedSections`, not `sections`.
+Without accounts or `collapsedSections`, only the header row shows.
 
 For account panels, pass fixed view data in `AccountView`. Compute `hasQuota`,
 `collapsedQuotaText` and `quotaAge` for the same `now` you pass to the frame.
@@ -72,9 +76,29 @@ text colour on `accent`; it is not a panel background.
 
 ## Exports
 
-The root export provides `SidebarFrame`, `SidebarSection`, `SidebarStatRow` and
-`SidebarTextRow`. Types: `AccountView`, `QuotaGroupView`, `SidebarWindowPart`,
-`PaceView`, `SidebarFrameProps`, `SidebarTheme`, `SidebarAppearance` and `Tone`.
+The root export includes `SidebarFrame`, `SidebarSection`, `SidebarStatRow`,
+`SidebarGaugeRow` and `SidebarTextRow`. Types: `AccountView`, `QuotaGroupView`,
+`SidebarWindowPart`, `PaceView`, `SidebarFrameProps`, `SidebarGaugeRowProps`,
+`SidebarTheme`, `SidebarAppearance` and `Tone`.
+
+### Percentage row
+
+Use `SidebarGaugeRow` in a frame for a value without quota windows:
+
+```tsx
+<SidebarGaugeRow label='ctx' used={55} value='483K/872K' warnAt={70} errorAt={85} />
+```
+
+`SidebarGaugeRowProps` has these props: `label: string`, `used?: number`,
+`value?: string`, `warnAt?: number` and `errorAt?: number`.
+The row shows `label`, a used bar, and the rounded percentage left.
+Optional text shows at the right. The row keeps the `used` percentage in the
+0–100 range. A missing or non-finite value shows `no reading` without a bar.
+
+The bar uses the frame's `appearance.barWidth` (10 for a 10-cell bar), characters
+and theme tones. Thresholds default to the frame's appearance.
+The row cuts the optional text first. At narrow widths, it cuts or removes the
+bar, then cuts `label` to keep the percentage in view.
 
 ## Development
 

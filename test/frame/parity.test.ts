@@ -16,7 +16,7 @@ test('shared sidebar preserves frozen shared UTF-8 frames and spans', async () =
     child.exited,
   ])
   expect({ exitCode, stderr }).toEqual({ exitCode: 0, stderr: '' })
-  expect(stdout).toContain('32 frozen shared frames and style spans matched')
+  expect(stdout).toContain('42 frozen shared frames and style spans matched')
 }, 30_000)
 
 test('shared sidebar composes groups and expanded slots and keeps collapse controlled', async () => {

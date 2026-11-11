@@ -1,5 +1,6 @@
 import {
   SidebarFrame,
+  SidebarGaugeRow,
   SidebarSection,
   SidebarStatRow,
   SidebarTextRow,
@@ -18,6 +19,7 @@ export function ParityFrame(props: { input: FrameInput; collapsed: boolean }) {
       showQuota={true}
       now={NOW}
       collapsed={props.collapsed}
+      collapsible={props.input.collapsible}
       onToggle={() => {}}
       beforeQuota={() => (
         <SidebarTextRow text='auth needs attention' tone='warning' />
@@ -27,6 +29,16 @@ export function ParityFrame(props: { input: FrameInput; collapsed: boolean }) {
       )}
       sections={() => (
         <>
+          <Show when={props.input.gauges}>
+            <SidebarGaugeRow label='ctx' used={55} value='483K/872K' />
+            <SidebarGaugeRow label='zero' used={0} />
+            <SidebarGaugeRow label='full' used={100} />
+            <SidebarGaugeRow label='unknown' />
+            <SidebarStatRow
+              label='Status'
+              value='Context summary pending until the current response completes'
+            />
+          </Show>
           <Show when={props.input.accounts.length === 0}>
             <SidebarTextRow text='No accounts' />
           </Show>

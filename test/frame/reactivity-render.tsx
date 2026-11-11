@@ -3,6 +3,7 @@ import {
   type AccountView,
   type SidebarAppearance,
   SidebarFrame,
+  SidebarGaugeRow,
   type SidebarTheme,
 } from '@cortexkit/opencode-sidebar'
 import { testRender } from '@opentui/solid'
@@ -39,6 +40,9 @@ const [prefs, setPrefs] = createSignal(appearance)
 const [palette, setPalette] = createSignal<SidebarTheme>(theme)
 const [data, setData] = createSignal(account)
 const [collapsed, setCollapsed] = createSignal(false)
+const [gaugeUsed, setGaugeUsed] = createSignal<number | undefined>(40)
+const [warnAt, setWarnAt] = createSignal<number>()
+const [errorAt, setErrorAt] = createSignal<number>()
 function mountSidebar(
   palette: () => SidebarTheme,
   prefs: () => SidebarAppearance,
@@ -50,13 +54,30 @@ function mountSidebar(
       return (
         <SidebarFrame
           header={{ badge: 'TEST' }}
-          accounts={[data()]}
+          accounts={
+            phase?.startsWith('gauge') && phase !== 'gauge-parity'
+              ? []
+              : [data()]
+          }
           theme={palette()}
           appearance={prefs()}
           now={NOW}
           showQuota={true}
           collapsed={collapsed()}
           onToggle={() => {}}
+          sections={
+            phase?.startsWith('gauge')
+              ? () => (
+                  <SidebarGaugeRow
+                    label='ctx'
+                    used={gaugeUsed()}
+                    value='483K/872K'
+                    warnAt={warnAt()}
+                    errorAt={errorAt()}
+                  />
+                )
+              : undefined
+          }
         />
       )
     },
@@ -100,7 +121,83 @@ async function matchesFresh(label: string) {
 try {
   // Do not settle layout: hosts can paint immediately after mounting the frame.
   await view.renderOnce()
-  if (phase === 'first-frame') {
+  if (phase === 'gauge-parity') {
+    for (const next of [
+      appearance,
+      {
+        ...appearance,
+        barWidth: 15,
+        barFilledChar: '#',
+        barEmptyChar: '.',
+        warnThreshold: 30,
+      },
+    ]) {
+      setPrefs(next)
+      const actual = await matchesFresh('quota and gauge parity')
+      const spans = view.captureSpans().lines.flatMap((line) => line.spans)
+      const bar =
+        next.barFilledChar.repeat(Math.round(next.barWidth * 0.4)) +
+        next.barEmptyChar.repeat(
+          next.barWidth - Math.round(next.barWidth * 0.4),
+        )
+      assert.equal(actual.chars.split(bar).length - 1, 2)
+      const bars = spans.filter((span) => span.text.includes(bar))
+      assert.equal(bars.length, 2)
+      assert.deepEqual(bars[0]?.fg, bars[1]?.fg)
+    }
+  } else if (phase === 'gauge-theme') {
+    for (const [label, next] of [
+      ['full theme', theme],
+      ['cleared theme', {}],
+      ['restored theme', theme],
+    ] as const) {
+      setPalette(next)
+      const actual = await matchesFresh(label)
+      assert.equal(actual.glyphs.length, 10)
+    }
+  } else if (phase === 'gauge-values') {
+    for (const [used, expected] of [
+      [0, '░░░░░░░░░░ 100% left'],
+      [100, '██████████ 0% left'],
+      [55, '██████░░░░ 45% left'],
+      [-10, '░░░░░░░░░░ 100% left'],
+      [110, '██████████ 0% left'],
+      [undefined, 'no reading'],
+      [Number.NaN, 'no reading'],
+      [Number.POSITIVE_INFINITY, 'no reading'],
+    ] as const) {
+      setGaugeUsed(used)
+      const actual = await matchesFresh(`used ${used}`)
+      assert.ok(actual.chars.includes(expected), actual.chars)
+      if (expected === 'no reading') assert.equal(actual.glyphs.length, 0)
+    }
+    setGaugeUsed(55)
+    setWarnAt(50)
+    let actual = await matchesFresh('custom warning')
+    assert.ok(
+      actual.glyphs.every(
+        ({ fg }) => JSON.stringify(fg) === JSON.stringify(theme.warning),
+      ),
+    )
+    setErrorAt(55)
+    actual = await matchesFresh('custom error')
+    assert.ok(
+      actual.glyphs.every(
+        ({ fg }) => JSON.stringify(fg) === JSON.stringify(theme.error),
+      ),
+    )
+    setPrefs({
+      ...appearance,
+      barWidth: 15,
+      barFilledChar: '#',
+      barEmptyChar: '.',
+    })
+    assert.ok(
+      (await matchesFresh('custom appearance')).chars.includes(
+        '########....... 45% left',
+      ),
+    )
+  } else if (phase === 'first-frame') {
     const frame = view.captureCharFrame()
     assert.match(frame, /5h ████░░░░░░ 60% left/, 'first frame lost the 5h bar')
     assert.match(frame, /7d ███████░░░ 30% left/, 'first frame lost the 7d bar')

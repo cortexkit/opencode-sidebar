@@ -101,6 +101,7 @@ export interface SidebarFrameProps {
   showQuota: boolean
   now: number
   collapsed: boolean
+  collapsible?: boolean
   onToggle: () => void
   beforeQuota?: (account: AccountView) => JSX.Element
   afterQuota?: (account: AccountView) => JSX.Element
@@ -251,6 +252,106 @@ function barSegments(
     },
     { text: appearance.barEmptyChar.repeat(width - hi), tone },
   ]
+}
+
+export interface SidebarGaugeRowProps {
+  label: string
+  used?: number
+  value?: string
+  warnAt?: number
+  errorAt?: number
+}
+
+export function SidebarGaugeRow(props: SidebarGaugeRowProps) {
+  const context = frameContext()
+  const [columns, setColumns] = createSignal(0)
+  let row: { width: number } | undefined
+  const known = () => props.used !== undefined && Number.isFinite(props.used)
+  const used = () => Math.max(0, Math.min(100, props.used ?? 0))
+  const figure = () =>
+    known() ? `${Math.round(100 - used())}% left` : 'no reading'
+  const appearance = () => ({
+    ...context.appearance,
+    warnThreshold: props.warnAt ?? context.appearance.warnThreshold,
+    errorThreshold: props.errorAt ?? context.appearance.errorThreshold,
+  })
+  const label = () =>
+    columns() <= 0
+      ? props.label
+      : fitText(props.label, columns() - displayWidth(figure()) - 1)
+  const barCells = () => {
+    if (!known()) return 0
+    const desired = context.appearance.barWidth
+    if (columns() <= 0) return desired
+    const room =
+      columns() - displayWidth(label()) - 1 - displayWidth(figure()) - 1
+    return room >= Math.min(4, desired) ? Math.min(desired, room) : 0
+  }
+  const segments = createMemo(
+    () => barSegments(used(), { ...appearance(), barWidth: barCells() }),
+    undefined,
+    {
+      equals: (previous, next) =>
+        previous.every(
+          (segment, index) =>
+            segment.text === next[index]?.text &&
+            segment.tone === next[index]?.tone,
+        ),
+    },
+  )
+  const value = () => {
+    if (!props.value) return ''
+    if (columns() <= 0) return props.value
+    const room =
+      columns() -
+      displayWidth(label()) -
+      1 -
+      displayWidth(figure()) -
+      (barCells() > 0 ? barCells() + 1 : 0) -
+      1
+    return room >= 2 ? fitText(props.value, room) : ''
+  }
+  const tone = () => (known() ? usageTone(used(), appearance()) : 'textMuted')
+  return (
+    <box
+      ref={(element: { width: number }) => {
+        row = element
+      }}
+      onSizeChange={() => setColumns(row?.width ?? 0)}
+      width='100%'
+      flexDirection='row'
+      justifyContent='space-between'
+    >
+      <box flexDirection='row' flexShrink={0}>
+        <text fg={context.theme.textMuted} wrapMode='none'>
+          {label()}{' '}
+        </text>
+        <Show when={barCells() > 0}>
+          {/* Explicit widths let empty slots grow on OpenTUI 0.4.5 and 0.5.11. */}
+          <Index each={segments()}>
+            {(segment) => (
+              <text
+                fg={context.theme[segment().tone]}
+                wrapMode='none'
+                width={displayWidth(segment().text)}
+              >
+                {segment().text}
+              </text>
+            )}
+          </Index>
+          <text wrapMode='none'> </text>
+        </Show>
+        <text fg={context.theme[tone()]} wrapMode='none'>
+          {figure()}
+        </text>
+      </box>
+      <Show when={value()}>
+        <text fg={context.theme.textMuted} wrapMode='none'>
+          {value()}
+        </text>
+      </Show>
+    </box>
+  )
 }
 
 function QuotaRow(props: {
@@ -602,8 +703,9 @@ function AccountBlock(props: { account: AccountView; marginTop: number }) {
 /** Borderless, controlled presentation; host registration and provider policy stay in the plugin. */
 export function SidebarFrame(props: SidebarFrameProps) {
   const hasData = () => props.accounts.length > 0
+  const canCollapse = () => props.collapsible ?? hasData()
   const headerLabel = () =>
-    !hasData()
+    !canCollapse()
       ? props.header.badge
       : `${props.collapsed ? '\u25b6' : '\u25bc'} ${props.header.badge}`
   // Missing semantic colors inherit normal text; an unset palette uses terminal defaults.
@@ -634,7 +736,7 @@ export function SidebarFrame(props: SidebarFrameProps) {
           justifyContent='space-between'
           alignItems='center'
           onMouseDown={() => {
-            if (hasData()) props.onToggle()
+            if (canCollapse()) props.onToggle()
           }}
         >
           <box
@@ -654,13 +756,13 @@ export function SidebarFrame(props: SidebarFrameProps) {
             <text fg={context.theme.textMuted}>{props.header.version}</text>
           </Show>
         </box>
-        <Show when={props.collapsed && hasData()}>
+        <Show when={props.collapsed && canCollapse()}>
           <For each={props.accounts}>
             {(account) => <CollapsedAccountRow account={account} />}
           </For>
           {props.collapsedSections?.()}
         </Show>
-        <Show when={!props.collapsed || !hasData()}>
+        <Show when={!props.collapsed || !canCollapse()}>
           <Show when={props.showQuota && hasData()}>
             <SidebarSection title='Quota'>
               <For each={props.accounts}>
