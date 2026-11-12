@@ -72,7 +72,7 @@ if (phase === 'static') {
     for (const collapsed of [false, true]) {
       // At 30 columns the header just fits; at 26 it overflows. How an overflowing
       // row shrinks or wraps is OpenTUI's layout, and it differs between the
-      // peer floor and current releases, so 26 has no golden. It only proves the
+      // oldest supported OpenTUI version and current releases, so 26 has no golden. It only proves the
       // frame adds no fitting of its own.
       for (const width of [26, 30, 42]) {
         const state = collapsed ? 'collapsed' : 'expanded'
