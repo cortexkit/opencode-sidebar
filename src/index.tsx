@@ -94,7 +94,7 @@ export interface AccountView {
 }
 
 export interface SidebarFrameProps {
-  header: { badge: string; version?: string }
+  header: { badge: string; version?: string; afterBadge?: () => JSX.Element }
   accounts: readonly AccountView[]
   theme?: SidebarTheme
   appearance: SidebarAppearance
@@ -726,6 +726,21 @@ export function SidebarFrame(props: SidebarFrameProps) {
   // Inverting an incomplete badge palette can put light text on a light background.
   const invertBadge = () =>
     props.theme?.accent !== undefined && props.theme?.background !== undefined
+  function HeaderBadge() {
+    return (
+      <box
+        paddingLeft={1}
+        paddingRight={1}
+        backgroundColor={invertBadge() ? props.theme?.accent : undefined}
+      >
+        <text
+          fg={invertBadge() ? props.theme?.background : context.theme.accent}
+        >
+          <b>{headerLabel()}</b>
+        </text>
+      </box>
+    )
+  }
   return (
     <FrameContext.Provider value={context}>
       <box width='100%' flexDirection='column'>
@@ -740,19 +755,12 @@ export function SidebarFrame(props: SidebarFrameProps) {
             if (canCollapse()) props.onToggle()
           }}
         >
-          <box
-            paddingLeft={1}
-            paddingRight={1}
-            backgroundColor={invertBadge() ? props.theme?.accent : undefined}
-          >
-            <text
-              fg={
-                invertBadge() ? props.theme?.background : context.theme.accent
-              }
-            >
-              <b>{headerLabel()}</b>
-            </text>
-          </box>
+          <Show when={props.header.afterBadge} fallback={<HeaderBadge />}>
+            <box flexDirection='row' alignItems='center'>
+              <HeaderBadge />
+              {props.header.afterBadge?.()}
+            </box>
+          </Show>
           <Show when={props.header.version}>
             <text fg={context.theme.textMuted}>{props.header.version}</text>
           </Show>

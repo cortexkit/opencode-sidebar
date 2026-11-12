@@ -67,6 +67,16 @@ Set it to `false` to keep a panel expanded with or without accounts.
 When `collapsed={true}`, the panel shows `collapsedSections`, not `sections`.
 Without accounts or `collapsedSections`, only the header row shows.
 
+`SidebarFrame` accepts `header: { badge: string; version?: string; afterBadge?: () => JSX.Element }`;
+the optional `afterBadge` callback renders immediately after the accent badge
+(outside its padding), before the version on the same row, in every collapse mode.
+The frame adds no spacing, styling, text fitting, ellipsis, wrapping or shrink
+override: the plugin owns the marker's content, margins and padding, with default
+flex behaviour at narrow widths.
+The callback runs inside the frame's Solid owner so signals and theme stay reactive;
+clicking the slot still toggles a collapsible header, and omitting it leaves the
+existing layout unchanged.
+
 For account panels, pass fixed view data in `AccountView`. Compute `hasQuota`,
 `collapsedQuotaText` and `quotaAge` for the same `now` you pass to the frame.
 `hasQuota` means at least one known reading, not merely a nonempty group.
