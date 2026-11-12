@@ -70,7 +70,11 @@ if (phase === 'static') {
     ['sparse', { text: theme.text }],
   ] as const) {
     for (const collapsed of [false, true]) {
-      for (const width of [26, 42]) {
+      // At 30 columns the header just fits; at 26 it overflows. How an overflowing
+      // row shrinks or wraps is OpenTUI's layout, and it differs between the
+      // peer floor and current releases, so 26 has no golden. It only proves the
+      // frame adds no fitting of its own.
+      for (const width of [26, 30, 42]) {
         const state = collapsed ? 'collapsed' : 'expanded'
         const view = await testRender(
           () =>
@@ -89,13 +93,19 @@ if (phase === 'static') {
           { width, height },
         )
         try {
-          const chars = await snapshot(
-            view,
-            `after-badge-muted-${name}-${state}-${width}`,
-          )
+          let chars: string
+          if (width === 26) {
+            for (let pass = 0; pass < 3; pass++) await view.renderOnce()
+            chars = view.captureCharFrame()
+          } else {
+            chars = await snapshot(
+              view,
+              `after-badge-muted-${name}-${state}-${width}`,
+            )
+          }
           assert.ok(chars.includes(`${state} content`))
           assert.ok(!chars.includes('…'), 'the frame must not fit plugin text')
-          if (width === 42) {
+          if (width !== 26) {
             const header = chars.split('\n')[0] ?? ''
             assert.match(header, /[▶▼] AFT {2}⚠ git features off +v1/u)
           }
